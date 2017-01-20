@@ -1,0 +1,9 @@
+---
+
+- shell: "echo ball is {{ ball|default(False) }}"
+
+- shell: "echo ribbon is {{ ribbon|default(False) }}"
+
+- name: print result
+  shell: 'echo {{ ansible_host }} has both ball and ribbon'
+  when: '(ball|default(False)) and (ribbon|default(False))'
