@@ -7,3 +7,5 @@
 - name: print result
   shell: 'echo {{ ansible_host }} has both ball and ribbon'
   when: '(ball|default(False)) and (ribbon|default(False))'
+
+- debug: var=role_path
