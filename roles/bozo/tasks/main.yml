@@ -1,11 +1,32 @@
 ---
+#
+# This is just a demo for BSSGOAT-2248. The important points are:
+#
+# (1) The library must contain the module when the playbook is loaded
+#     but is is enough to exist, its contents are not important.
+# (2) We can replace that file with the "real thing" at runtime in this
+#     task and then use the updated content in the next task.
+#     This way, the module need not be part of this role [*] but can be
+#     managed in any other VCS.
+#
+# [*] This embedding into a role is a recipe from the Ansible docs, see
+#     http://docs.ansible.com/ansible/latest/playbooks_reuse_roles.html#embedding-modules-and-plugins-in-roles
+#     However, this means that the module's implementation is tightly coupled
+#     to the Ansible module. But if this implementation is some complex
+#     Python code with a slim Ansible API on top it is not necessarily
+#     a good idea to go this way.
+#
+- name: download vicontrol module
+  command: cp -t /tmp ./roles/bozo/files/demo/vicontrol.py
+  delegate_to: localhost
 
-- shell: "echo ball is {{ ball|default(False) }}"
+- name: embed vicontrol module
+  copy:
+    src: /tmp/vicontrol.py
+    dest: ./roles/bozo/library
+  delegate_to: localhost
 
-- shell: "echo ribbon is {{ ribbon|default(False) }}"
-
-- name: print result
-  shell: 'echo {{ ansible_host }} has both ball and ribbon'
-  when: '(ball|default(False)) and (ribbon|default(False))'
-
-- debug: var=role_path
+- name: restart machine
+  vicontrol:
+    name: jepp
+    new: true
