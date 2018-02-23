@@ -10,4 +10,7 @@
     name: caesar
     new: true
   environment:
-    PATH: '/home/jjautz/.venv/ansiblelatest/bin:/usr/bin:/bin'
+    PATH: '/usr/bin:/bin'
+# This --^ could contain the path of a virtualenv as first item
+# with the effect that this module would be run in a different
+# python interpreter.

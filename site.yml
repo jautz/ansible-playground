@@ -1,14 +1,4 @@
 ---
 - hosts: localhost
-  vars:
-    myvar: 'value'
   roles:
   - role: bozo
-
-  post_tasks:
-
-  - debug:
-      msg: version comparison yields true
-    when: ansible_lsb.major_release | version_compare('7', '>')
-
-  - debug: var=playbook_dir
