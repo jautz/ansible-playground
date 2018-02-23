@@ -1,4 +1,6 @@
-#!/usr/bin/python
+#!/usr/bin/python3
+import sys
+from time import sleep
 
 ANSIBLE_METADATA = {
     'metadata_version': '1.1',
@@ -99,7 +101,7 @@ def run_module():
     # manipulate or modify the state as needed (this is going to be the
     # part where your module will do what it needs to do)
     result['original_message'] = module.params['name']
-    result['message'] = 'goodbye'
+    result['message'] = "goodbye, this was executed by '%s'" % sys.executable
 
     # use whatever logic you need to determine whether or not this module
     # made any modifications to your target
@@ -114,6 +116,7 @@ def run_module():
 
     # in the event of a successful module execution, you will want to
     # simple AnsibleModule.exit_json(), passing the key/value results
+    sleep(10)
     module.exit_json(**result)
 
 def main():
