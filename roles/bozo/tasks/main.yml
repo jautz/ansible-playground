@@ -2,3 +2,4 @@
 
 - name: hello
   command: /bin/echo world
+  notify: myhandler

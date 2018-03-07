@@ -1,0 +1,4 @@
+---
+
+- name: myhandler
+  command: /bin/echo I am a handler task
