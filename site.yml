@@ -1,8 +1,5 @@
 ---
 - hosts: localhost
 
-  pre_tasks:
-  - debug: var=playbook_dir
-
   roles:
   - role: bozo

@@ -1,4 +1,9 @@
 ---
 
-- name: hello
-  command: /bin/echo world
+- name: good
+  command: /bin/echo working fine
+
+- name: failed command invocation returns code 2
+  command: /bin/bogus command not found
+  register: rv_bogus_command
+  failed_when: rv_bogus_command.rc != 2
