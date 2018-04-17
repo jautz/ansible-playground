@@ -1,8 +1,31 @@
 ---
 - hosts: localhost
+  tasks:
 
-  pre_tasks:
-  - debug: var=playbook_dir
+    # demonstrate the outcome of the bool filter with different inputs
+    - debug:
+        msg: >
+          input '{{ item }}' cast to boolean is {{ item | bool }}
+      with_items:
+        - ""
+        - " "
+        - "A"
+        - -1
+        - 0
+        - 1
+        - 2
+        - true
+        - false
+        - "true"
+        - "false"
+        - yes
+        - no
 
-  roles:
-  - role: bozo
+    - name: Mind the operator precedence, pipe binds very strongly
+      command: >
+        /bin/echo
+        My fruit is
+        {{ ('banana' | length > 0) | ternary('bent', 'straight') }}
+
+    - command: /bin/echo I do not die from an undefined variable
+      when: my_undef_var | default(false)
