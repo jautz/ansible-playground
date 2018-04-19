@@ -29,3 +29,15 @@
 
     - command: /bin/echo I do not die from an undefined variable
       when: my_undef_var | default(false)
+
+    - set_fact:
+        growing_list: "{{ growing_list | default([]) + [item, 42] }}"
+      with_items:
+        - A
+        - B
+
+    - set_fact:
+        growing_dict: "{{ growing_dict | default({}) | combine({item: 42}) }}"
+      with_items:
+        - A
+        - B
