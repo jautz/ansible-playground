@@ -1,4 +1,6 @@
 ---
 
+- debug: var=role_path
+
 - name: hello
   command: /bin/echo world
