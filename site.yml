@@ -2,7 +2,9 @@
 - hosts: localhost
   tasks:
 
-    # demonstrate the outcome of the bool filter with different inputs
+    # Demonstrate the outcome of the bool filter with different inputs.
+    # See also to_bool function for implementation details:
+    # https://github.com/ansible/ansible/blob/devel/lib/ansible/plugins/filter/core.py#L92
     - debug:
         msg: >
           input '{{ item }}' cast to boolean is {{ item | bool }}
@@ -21,11 +23,16 @@
         - yes
         - no
 
+    - debug:
+        msg: Beware that bool filter on None yields None not False
+      when: '{{ none | bool is none }}'
+
     - name: Mind the operator precedence, pipe binds very strongly
       command: >
         /bin/echo
         My fruit is
         {{ ('banana' | length > 0) | ternary('bent', 'straight') }}
+      changed_when: false
 
     - command: /bin/echo I do not die from an undefined variable
       when: my_undef_var | default(false)
