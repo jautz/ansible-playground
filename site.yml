@@ -1,8 +1,34 @@
 ---
 - hosts: localhost
 
-  pre_tasks:
-  - debug: var=playbook_dir
-
+  # when using "roles" multiple calls with identical params are influenced by
+  # the "allow_duplicates" setting in meta/main.yml
   roles:
-  - role: bozo
+    - role: bozo
+      txt: Blah
+    - role: bozo
+      txt: Blah
+    - role: hank
+      txt: Hiho
+    - role: hank
+      txt: Hiho
+
+  # Neither "import_role" nor "include_role" are influenced by the
+  # "allow_duplicates" setting in meta/main.yml
+  tasks:
+    - import_role:
+        name: bozo
+      vars:
+        txt: Blah
+    - import_role:
+        name: bozo
+      vars:
+        txt: Blah
+    - import_role:
+        name: hank
+      vars:
+        txt: Hiho
+    - import_role:
+        name: hank
+      vars:
+        txt: Hiho
