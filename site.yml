@@ -1,8 +1,16 @@
 ---
 - hosts: localhost
+  vars:
+    dyn: dynamic
+    keys:
+      - alpha
+      - beta
+      - "{{ dyn }} key"
+    values:
+      - eins
+      - zwei
+      - "{{ dyn }} val"
+    mydict: "{{ dict(keys | zip(values)) }}"
 
-  pre_tasks:
-  - debug: var=playbook_dir
-
-  roles:
-  - role: bozo
+  tasks:
+    - debug: var=mydict
