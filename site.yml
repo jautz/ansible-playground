@@ -7,7 +7,8 @@
     # https://github.com/ansible/ansible/blob/devel/lib/ansible/plugins/filter/core.py#L92
     - debug:
         msg: >
-          input '{{ item }}' cast to boolean is {{ item | bool }}
+          input '{{ item }}' of type '{{ item | type_debug }}'
+          cast to boolean is '{{ item | bool }}'
       with_items:
         - ""
         - " "
