@@ -1,8 +1,74 @@
 ---
 - hosts: localhost
+  tasks:
+    - debug:
+        msg: As simple as it gets, a single line of text WITHOUT trailing newline character.
 
-  pre_tasks:
-  - debug: var=playbook_dir
+    - debug:
+        msg:
+          Unquoted multi-line flow scalars
+          will be folded unless there is
+          an empty line.
 
-  roles:
-  - role: bozo
+          The one above is responsible for
+          this sentence not being merged with
+          the previous one.
+              Note that the more indented lines
+              do not mean anything,
+              they will be folded into
+              a single space, too.
+
+          This string ends WITHOUT a trailing newline character.
+
+    - debug:
+        msg:
+          'Quoted multi-line flow scalars
+          will be folded in the same way.
+          This style is especially suitable for boolean expressions
+          spanning multiple lines since Ansible will not recognize
+          strings representing booleans if there is a trailing
+          newline character. The result will be a string
+          like "True\n". See the demo below.
+          This string ends WITHOUT a trailing newline character.'
+
+    - debug:
+        msg: |
+          Literal Style
+          takes formatted blocks
+              and even more
+              indented blocks
+          as-is.
+
+          This string is terminated with a newline character.
+
+    - debug:
+        msg: >
+          Folded Style
+          converts newlines
+          to spaces
+              unless the line is
+              more indented.
+          Also, empty lines make a difference.
+
+          The one above is responsible for
+          this sentence not being merged with
+          the previous one.
+
+          This string is terminated with a newline character.
+
+    # boolean expression for demo (see explanation above)
+    - set_fact:
+        quoted_multiline_boolean: "{{
+          (ansible_hostname | default('unknown_host') == 'phobos')
+          | bool
+        }}"
+        folded_style_boolean: >
+          {{
+          (ansible_hostname | default('unknown_host') == 'phobos')
+          | bool
+          }}
+
+    - debug:
+        msg: "{{ quoted_multiline_boolean | type_debug }}"
+    - debug:
+        msg: "{{ folded_style_boolean | type_debug }}"
