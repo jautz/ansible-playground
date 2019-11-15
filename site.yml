@@ -1,8 +1,10 @@
 ---
 - hosts: localhost
 
-  pre_tasks:
-  - debug: var=playbook_dir
-
-  roles:
-  - role: bozo
+  tasks:
+    # Play with include vs. import and the conditional "when" to see the effects
+    - include_role:
+        name: bozo
+      when: true
+    - import_role:
+        name: zorg

@@ -1,0 +1,8 @@
+---
+
+- set_fact:
+    zorg_role_version: "{{ role_path | read_role_version() }}"
+  when: bozo_role_included | default(false)
+
+- debug:
+    msg: role version is {{ zorg_role_version | default('?') }}

@@ -1,6 +1,8 @@
 ---
 
-- debug: var=role_path
+- set_fact:
+    bozo_role_included: true
 
-- name: hello
-  command: /bin/echo world
+- debug: var=playbook_dir
+
+- debug: var=role_path
