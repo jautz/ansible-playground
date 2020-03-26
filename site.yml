@@ -1,8 +1,15 @@
 ---
-- hosts: localhost
-
-  pre_tasks:
-  - debug: var=playbook_dir
-
-  roles:
-  - role: bozo
+- hosts: workwithme
+  gather_facts: false
+  tasks:
+    - debug: var=hostvars[inventory_hostname] # contains most of the vars below
+    - debug: var=groups # map: group name => list of members
+    - debug: var=group_names # groups the current host belongs to (default: 'ungrouped')
+    - debug: var=inventory_hostname
+    - debug: var=inventory_hostname_short
+    - debug: var=inventory_dir
+    - debug: var=playbook_dir
+    - debug: var=play_hosts # deprecated, use 'ansible_play_hosts'
+    - debug: var=ansible_play_hosts
+    - debug: var=ansible_play_batch # may differ from ansible_play_hosts (think serial: 1)
+    - debug: var=ansible_playbook_python
