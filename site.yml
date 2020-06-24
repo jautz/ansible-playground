@@ -1,8 +1,24 @@
 ---
 - hosts: localhost
-
-  pre_tasks:
-  - debug: var=playbook_dir
-
-  roles:
-  - role: bozo
+  gather_facts: no
+  vars:
+    instances:
+      - name: eagle
+        state: enabled
+      - name: dodo
+        state: disabled
+      - name: pelican
+        state: purged
+      - name: eel
+        state: enabled
+  tasks:
+    # Example that showcases the inline template lookup filter.
+    # Moreover, it demonstrates how to generate a json document using an
+    # easier-to-template yaml source file.
+    - copy:
+        content: "{{
+          lookup('template', './myconf.yml.j2')
+          | from_yaml
+          | to_nice_json
+        }}"
+        dest: /tmp/ansible-playground-myconf.json

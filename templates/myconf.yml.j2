@@ -1,0 +1,7 @@
+{% for item in instances %}
+{% if item.state == 'enabled' %}
+mytool@{{ item.name }}.service: active
+{% elif item.state == 'disabled' %}
+mytool@{{ item.name }}.service: inactive
+{% endif %}
+{% endfor %}
