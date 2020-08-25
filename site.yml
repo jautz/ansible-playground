@@ -14,6 +14,7 @@
     - debug: var=ansible_play_batch # may differ from ansible_play_hosts (think serial: 1)
     - debug: var=ansible_playbook_python
 
+    - debug: var=ansible_config_file
     # not sure yet what these mean exactly but wanted to record them anyway
     - debug: var=ansible_role_names
     - debug: var=ansible_play_role_names
