@@ -35,8 +35,13 @@
         {{ ('banana' | length > 0) | ternary('bent', 'straight') }}
       changed_when: false
 
-    - command: /bin/echo I do not die from an undefined variable
-      when: my_undef_var | default(false)
+    - debug:
+        msg: Boolean negation has lower precedence than the pipe
+      when: not x | default('y') | length > 1
+
+    - command: /bin/echo I do not die from nested undefined data
+      changed_when: false
+      when: my_undef_dict.myundef_field | default(true)
 
     - set_fact:
         growing_list: "{{ growing_list | default([]) + [item, 42] }}"
