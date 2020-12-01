@@ -9,8 +9,9 @@
     - debug: var=inventory_hostname_short
     - debug: var=inventory_dir
     - debug: var=playbook_dir
-    - debug: var=play_hosts # deprecated, use 'ansible_play_hosts'
+    - debug: var=play_hosts # deprecated; beware: this is the same as ansible_play_batch
     - debug: var=ansible_play_hosts
+    - debug: var=ansible_play_hosts_all # AFAIK contains unreachable hosts as well
     - debug: var=ansible_play_batch # may differ from ansible_play_hosts (think serial: 1)
     - debug: var=ansible_playbook_python
 
