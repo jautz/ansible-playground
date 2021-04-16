@@ -2,6 +2,31 @@
 - hosts: localhost
   gather_facts: false
   tasks:
-    - debug: var=playbook_dir
-    - include_role:
-        name: bozo
+    - name: do not continue until async task has finished
+      command: sleep 5
+      async: 10
+      poll: 3
+      # ^^^ check async job result every N seconds
+
+    - name: start async task and continue
+      command: sleep 10
+      async: 30
+      poll: 0
+      register: rv_async
+
+    - name: do not start polling immediately
+      wait_for:
+        timeout: 5
+
+    - name: poll for job to finish
+      async_status:
+        jid: '{{ rv_async.ansible_job_id }}'
+      register: rv_job
+      until: rv_job.finished
+      retries: 5
+      delay: 3
+
+    - name: async task that runs into timeout
+      command: sleep 10
+      async: 5
+      poll: 3
