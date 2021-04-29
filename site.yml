@@ -16,10 +16,18 @@
     - debug: var=ansible_playbook_python
 
     - debug: var=ansible_config_file
-    # not sure yet what these mean exactly but wanted to record them anyway
-    - debug: var=ansible_role_names
+
+    # Names of roles that are explicitly imported:
     - debug: var=ansible_play_role_names
+    # Names of roles implicitly imported into the current play through
+    # dependencies (meta/main.yml):
     - debug: var=ansible_dependent_role_names
+    # The union of the two previous lists:
+    - debug: var=ansible_role_names
+    # NOTE: none of these lists of role names contains roles that have been
+    # dynamically loaded through "include_role".
+    - import_role:
+        name: bozo
 
     # since Ansible 2.9.10
     - debug: var=ansible_collection
