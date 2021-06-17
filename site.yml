@@ -2,6 +2,88 @@
 - hosts: localhost
   gather_facts: false
   tasks:
-    - debug: var=playbook_dir
-    - include_role:
-        name: bozo
+    # name pattern: command returns code X and we wait for code Y
+
+    - name: rc 0 wf 0
+      command: /bin/true
+      register: result
+      changed_when: false
+      delegate_to: localhost
+      become: false
+      until: result.rc == 0
+      retries: 2
+      delay: 5
+
+    - name: rc 0 wf non-zero ==> fails after exhausting retries
+      when: false  # toggle condition to skip this task
+      command: /bin/true
+      register: result
+      changed_when: false
+      delegate_to: localhost
+      become: false
+      until: result.rc != 0
+      retries: 2
+      delay: 5
+
+    - name: rc 1 wf 0 ==> fails after exhausting retries (SEEMS to do what it is supposed to, but read on)
+      when: false  # toggle condition to skip this task
+      command: /bin/false
+      register: result
+      changed_when: false
+      delegate_to: localhost
+      become: false
+      until: result.rc == 0
+      retries: 2
+      delay: 5
+
+    - name: rc 1 wf non-zero ==> does not repeat because until-condition is true but fails due to non-zero command rc
+      when: false  # toggle condition to skip this task
+      command: /bin/false
+      register: result
+      changed_when: false
+      delegate_to: localhost
+      become: false
+      until: result.rc != 0
+      retries: 2
+      delay: 5
+
+    - name: rc 1 wf non-zero ==> avoid rc-induced failure with failed_when directive
+      #when: false  # toggle condition to skip this task
+      command: /bin/false
+      register: result
+      failed_when: result.rc == 0       # NOTE the inverted condition
+      changed_when: false
+      delegate_to: localhost
+      become: false
+      until: result.rc != 0
+      retries: 2
+      delay: 5
+
+    - name: rc 1 wf 0 ==> avoid rc-induced failure with failed_when directive
+      #when: false  # toggle condition to skip this task
+      command: /bin/false
+      register: result
+      failed_when: result.rc != 0       # NOTE the inverted condition
+      changed_when: false
+      delegate_to: localhost
+      become: false
+      until: result.rc == 0
+      retries: 2
+      delay: 5
+
+#
+# LEARNINGS
+#
+# In general the until-loop does what it is supposed to do. However, such a
+# task may fail for different reasons:
+#
+# (a) The retries limit is exhausted but the until-condition has not become true.
+#     Surely, this is what most users will expect.
+# (b) The called module itself reports failure (in case of "command" this means
+#     a non-zero exit code). Then the task will fail even if the unti-condition
+#     is true.
+#
+# Waiting for a command to return a non-zero code is possible but the task MUST
+# be annotated with a "failed_when" directive that contains the boolean
+# counterpart to the until-condition.
+#
