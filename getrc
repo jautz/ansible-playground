@@ -1,0 +1,9 @@
+#!/bin/bash
+set -e
+rcfile="$1"
+test -f "$rcfile" || exit 91
+rc=$(cut -d, -f1 < "$rcfile")
+test -n "$rc" || exit 92
+rest=$(cut -d, -f2- < "$rcfile")
+echo "$rest" > "$rcfile"
+exit $rc

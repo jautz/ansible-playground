@@ -1,75 +1,77 @@
 ---
 - hosts: localhost
   gather_facts: false
+  vars:
+    getrc: "{{ playbook_dir }}/getrc"
+    rcfile: "/tmp/rcfile"
   tasks:
-    # name pattern: command returns code X and we wait for code Y
+    - name: define return code per attempt
+      copy: dest="{{ rcfile }}" content=1,0
 
-    - name: rc 0 wf 0
-      command: /bin/true
-      register: result
+    - name: wait for zero (succeeds on attempt#2)
+      command: "{{ getrc }} {{ rcfile }}"
+      register: cmd
       changed_when: false
       delegate_to: localhost
       become: false
-      until: result.rc == 0
-      retries: 2
-      delay: 5
+      until: cmd.rc == 0
+      retries: 5
+      delay: 2
 
-    - name: rc 0 wf non-zero ==> fails after exhausting retries
-      when: false  # toggle condition to skip this task
-      command: /bin/true
-      register: result
+    - name: define return code per attempt
+      copy: dest="{{ rcfile }}" content=1
+
+    - name: wait for zero (fails after exhausting retries)
+      when: false  # skipped by default, comment condition to run this task
+      command: "{{ getrc }} {{ rcfile }}"
+      register: cmd
       changed_when: false
       delegate_to: localhost
       become: false
-      until: result.rc != 0
-      retries: 2
-      delay: 5
+      until: cmd.rc == 0
+      retries: 5
+      delay: 2
 
-    - name: rc 1 wf 0 ==> fails after exhausting retries (SEEMS to do what it is supposed to, but read on)
-      when: false  # toggle condition to skip this task
-      command: /bin/false
-      register: result
+    - name: define return code per attempt
+      copy: dest="{{ rcfile }}" content=1
+
+    - name: wait for non-zero (until-condition is true but fails due to non-zero command rc)
+      when: false  # skipped by default, comment condition to run this task
+      command: "{{ getrc }} {{ rcfile }}"
+      register: cmd
       changed_when: false
       delegate_to: localhost
       become: false
-      until: result.rc == 0
-      retries: 2
-      delay: 5
+      until: cmd.rc != 0
+      retries: 5
 
-    - name: rc 1 wf non-zero ==> does not repeat because until-condition is true but fails due to non-zero command rc
-      when: false  # toggle condition to skip this task
-      command: /bin/false
-      register: result
+    - name: define return code per attempt
+      copy: dest="{{ rcfile }}" content=0,0,3
+
+    - name: wait for non-zero (succeeds on attempt#3 iff failed_when is specified)
+      command: "{{ getrc }} {{ rcfile }}"
+      register: cmd
       changed_when: false
+      failed_when: cmd.rc == 0  # NOTE the explicit condition
       delegate_to: localhost
       become: false
-      until: result.rc != 0
-      retries: 2
-      delay: 5
+      until: cmd.rc != 0
+      retries: 5
+      delay: 2
 
-    - name: rc 1 wf non-zero ==> avoid rc-induced failure with failed_when directive
-      #when: false  # toggle condition to skip this task
-      command: /bin/false
-      register: result
-      failed_when: result.rc == 0       # NOTE the inverted condition
+    - name: define return code per attempt
+      copy: dest="{{ rcfile }}" content=0
+
+    - name: wait for non-zero (WRONG, succeeds due to bad failed_when condition)
+      command: "{{ getrc }} {{ rcfile }}"
+      register: cmd
       changed_when: false
+      failed_when: false        # NOTE too simple, do-until will never fail!
       delegate_to: localhost
       become: false
-      until: result.rc != 0
-      retries: 2
-      delay: 5
-
-    - name: rc 1 wf 0 ==> avoid rc-induced failure with failed_when directive
-      #when: false  # toggle condition to skip this task
-      command: /bin/false
-      register: result
-      failed_when: result.rc != 0       # NOTE the inverted condition
-      changed_when: false
-      delegate_to: localhost
-      become: false
-      until: result.rc == 0
-      retries: 2
-      delay: 5
+      until: cmd.rc != 0
+      retries: 5
+      delay: 2
 
 #
 # LEARNINGS
@@ -84,6 +86,8 @@
 #     is true.
 #
 # Waiting for a command to return a non-zero code is possible but the task MUST
-# be annotated with a "failed_when" directive that contains the boolean
-# counterpart to the until-condition.
+# be annotated with a "failed_when" directive that overrides the module default.
+#
+# BEWARE: "failed_when: false" is not specific enough. This will prohibit the
+# task to fail even if the do-until condition is false.
 #
