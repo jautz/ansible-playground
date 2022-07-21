@@ -54,3 +54,17 @@
       with_items:
         - A
         - B
+
+    - name: strip trailing slashes for consistent dirname and basename results
+      debug:
+        msg:
+          path is '{{ item }}'
+          dirname is '{{ item.rstrip('/') | dirname }}'
+          basename is '{{ item.rstrip('/') | basename }}'
+      loop:
+        - ''
+        - /     # Caveat: this one works better without rstrip
+        - /var
+        - /var/
+        - /var/tmp
+        - /var/tmp/
