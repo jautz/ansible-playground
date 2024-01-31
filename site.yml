@@ -1,6 +1,10 @@
 ---
 - hosts: localhost
   gather_facts: false
+  vars:
+    mydict:
+      value_one: alpha
+      value_two: "{{ myvar }}"
   tasks:
     - debug:
-        msg: hello world
+        var: mydict
