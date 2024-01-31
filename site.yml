@@ -2,6 +2,5 @@
 - hosts: localhost
   gather_facts: false
   tasks:
-    - debug: var=playbook_dir
-    - include_role:
-        name: bozo
+    - debug:
+        msg: hello world
