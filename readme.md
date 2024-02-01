@@ -4,6 +4,11 @@ Demonstrate an issue with Ansible that occurs when:
 - the `assemble` module is run with `remote_src: false`
 - the playbook is run with the `--diff` option.
 
+Note: this issue has already been
+[reported](https://github.com/ansible/ansible/issues/82359)
+and [fixed](https://github.com/ansible/ansible/pull/82360)
+by now.
+
 ## How to reproduce
 
 This works:
