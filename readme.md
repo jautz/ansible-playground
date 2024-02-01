@@ -1,21 +1,40 @@
 ## Purpose
 
-This little project is used to play around with Ansible.
+Demonstrate an issue with Ansible that occurs when:
+- the `assemble` module is run with `remote_src: false`
+- the playbook is run with the `--diff` option.
 
-The _master_ branch will not contain any interesting features,
-only the scaffolding to try things out quickly and easily.
+## How to reproduce
 
-Experiments that turn out to be interesting enough to keep or
-show to others will end up in branches.
-
-## How to run
-
-Run it like this:
+This works:
 ```
-ansible-playbook site.yml -vv
+ansible-playbook site.yml
 ```
 
-Another command I often use is this one that spits out all the facts:
+This triggers the exception:
 ```
-ansible localhost -m setup
+ansible-playbook site.yml --diff
+```
+
+With `-vvv` this traceback is revealed:
+
+```
+TASK [fails with diff mode enabled] *******************************************
+Thursday 01 February 2024  10:46:24 +0100 (0:00:00.183)       0:00:00.512 *****
+[...]
+The full traceback is:
+Traceback (most recent call last):
+  File "/home/jjautz/.venv/ansible-2-16-1/lib/python3.11/site-packages/ansible/executor/task_executor.py", line 165, in run
+    res = self._execute()
+          ^^^^^^^^^^^^^^^
+  File "/home/jjautz/.venv/ansible-2-16-1/lib/python3.11/site-packages/ansible/executor/task_executor.py", line 641, in _execute
+    result = self._handler.run(task_vars=vars_copy)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jjautz/.venv/ansible-2-16-1/lib/python3.11/site-packages/ansible/plugins/action/assemble.py", line 144, in run
+    diff = self._get_diff_data(dest, path, task_vars)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: ActionBase._get_diff_data() missing 1 required positional argument: 'content'
+fatal: [localhost]: FAILED! =>
+  msg: 'Unexpected failure during module execution: ActionBase._get_diff_data() missing 1 required positional argument: ''content'''
+  stdout: ''
 ```

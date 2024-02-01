@@ -2,5 +2,20 @@
 - hosts: localhost
   gather_facts: false
   tasks:
-    - debug:
-        msg: hello world
+    - file:
+        path: /tmp/ansible_assembled_{{ item }}
+        state: absent
+      loop:
+        - local
+        - remote
+
+    - name: works with diff mode enabled (but shows no diff)
+      assemble:
+        src: "{{ playbook_dir }}/files/parts.d"
+        dest: /tmp/ansible_assembled_remote
+
+    - name: fails with diff mode enabled
+      assemble:
+        src: "{{ playbook_dir }}/files/parts.d"
+        dest: /tmp/ansible_assembled_local
+        remote_src: false
