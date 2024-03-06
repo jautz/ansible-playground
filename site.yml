@@ -2,5 +2,13 @@
 - hosts: localhost
   gather_facts: false
   tasks:
-    - debug:
-        msg: hello world
+    - include_role:
+        name: alpha
+      vars:
+        alpha_x: x-value from role inclusion
+
+    - import_role:
+        name: beta
+      vars:
+        beta_b: b-value from role import
+        beta_y: y-value from role import

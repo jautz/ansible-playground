@@ -1,0 +1,14 @@
+---
+- debug: var=alpha_a
+- debug: var=alpha_x
+- debug: var=beta_b
+- debug: var=beta_y
+
+- assert:
+    that:
+      - alpha_a is defined
+      - alpha_a == 'a-value from defaults'
+      - alpha_x is defined
+      - beta_b is defined
+      - beta_b == 'b-value from defaults'
+      - beta_y is undefined
